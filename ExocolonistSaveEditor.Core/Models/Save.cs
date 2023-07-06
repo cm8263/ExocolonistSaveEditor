@@ -5,6 +5,9 @@ namespace ExocolonistSaveEditor.Core.Models
 {
     public class Save
     {
+        public string FileName { get; set; } = "Save";
+        public string FileTimestamp { get; set; } = "Save";
+
         private const int CurrentVersion = 2;
         public static string LastLoadedFilename { get; set; } = "";
         public int SaveFileVersion { get; set; } = 2;

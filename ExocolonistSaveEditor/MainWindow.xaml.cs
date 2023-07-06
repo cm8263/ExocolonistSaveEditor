@@ -1,9 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 using ExocolonistSaveEditor.Core;
 using ExocolonistSaveEditor.Core.Models;
+using ExocolonistSaveEditor.Windows;
 
 namespace ExocolonistSaveEditor
 {
@@ -13,8 +15,6 @@ namespace ExocolonistSaveEditor
     public partial class MainWindow : Window
     {
         internal readonly string SAVE_DIR = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Exocolonist", "Savegames");
-
-        internal Dictionary<string, Save> _savedGames = new();
 
         public MainWindow()
         {
@@ -29,7 +29,7 @@ namespace ExocolonistSaveEditor
 
             foreach (string file in files)
             {
-                string saveName = Utils.ParseSaveName(file) + " (" + Utils.ParsePrincessName(file) + ") - " + Utils.ParseDateTime(file).ToString("g");
+                string saveName = Utils.ParseSaveName(file);
                 Save? save = Save.Load(file);
 
                 if (saveName == "Save" || save is null)
@@ -37,15 +37,22 @@ namespace ExocolonistSaveEditor
                     continue;
                 }
 
-                _savedGames.Add(saveName, save);
-            }
+                save.FileName = saveName;
+                save.FileTimestamp = Utils.ParseDateTime(file).ToString("g");
 
-            SavesFound.Text = _savedGames.Count.ToString();
-
-            foreach (Save save in _savedGames.Values)
-            {
                 SaveData.Items.Add(save);
             }
+        }
+
+        private void SaveData_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is not ListViewItem item)
+            {
+                return;
+            }
+
+            SaveWindow subWindow = new((Save)item.Content);
+            subWindow.Show();
         }
     }
 }
