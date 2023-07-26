@@ -4,18 +4,17 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Saved Games - Exocolonoist Saved Editor" Height="450" Width="800">
     <Grid>
-        <Grid/>
         <Label Content="Saves found:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
         <TextBlock Name="SavesFound" HorizontalAlignment="Left" Height="13" Margin="92,15,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="97"/>
         <ListView Name="SaveData" HorizontalAlignment="Center" Height="383" Margin="0,41,0,0" VerticalAlignment="Top" Width="780">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn DisplayMemberBinding="{Binding Path=FileName}" Header="Save Name" Width="200"/>
-                    <GridViewColumn DisplayMemberBinding="{Binding Path=PrincessName}" Header="Character Name" Width="100"/>
-                    <GridViewColumn DisplayMemberBinding="{Binding Path=Week}" Header="Week" Width="50"/>
-                    <GridViewColumn DisplayMemberBinding="{Binding Path=FileTimestamp}" Header="Timestamp" Width="250"/>
+                    <GridViewColumn Header="Save Name" DisplayMemberBinding="{Binding Path=FileName}" Width="200"/>
+                    <GridViewColumn Header="Character Name" DisplayMemberBinding="{Binding Path=PrincessName}" Width="100"/>
+                    <GridViewColumn Header="Week" DisplayMemberBinding="{Binding Path=Week}" Width="50"/>
+                    <GridViewColumn Header="Timestamp" DisplayMemberBinding="{Binding Path=FileTimestamp}" Width="250"/>
                 </GridView>
             </ListView.View>
             <ListView.ItemContainerStyle>
