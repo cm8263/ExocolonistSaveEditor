@@ -270,6 +270,8 @@ function App() {
                             max={1}
                             step={0.01}
                             onChange={handlePronounsChange}
+                            minLabel={'She/Her'}
+                            maxLabel={'He/Him'}
                         />
 
                         <FloatSlider
@@ -279,6 +281,8 @@ function App() {
                             max={1}
                             step={0.01}
                             onChange={handleAppearanceChange}
+                            minLabel={'Feminine'}
+                            maxLabel={'Masculine'}
                         />
                     </section>
 
