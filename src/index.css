@@ -66,3 +66,14 @@ button:focus-visible {
         background-color: #f9f9f9;
     }
 }
+
+.skill-grid {
+    display: grid;
+    grid-template-columns: 200px minmax(0, 1fr) 40px 1.5fr 1.5fr 1.5fr;
+    align-items: center;
+    column-gap: 0.75rem;
+    row-gap: 0.25rem;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid #eee;
+    font-size: 0.9rem;
+}

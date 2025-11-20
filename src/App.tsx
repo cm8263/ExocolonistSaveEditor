@@ -5,6 +5,7 @@ import { SkillSlider } from './components/SkillSlider.tsx';
 import { secondsToHoursMinutes } from './utilities/secondsToHoursMinutes.ts';
 import { FloatSlider } from './components/FloatSlider.tsx';
 import { CardsTable } from './components/CardsTable.tsx';
+import { getSkillDetails } from '../../exocolonist-core/src/utilities/getSkillDetails.ts';
 
 const SPECIAL_SKILLS = new Set(['kudos', 'stress', 'rebellion']);
 
@@ -284,16 +285,37 @@ function App() {
                     {/* SKILLS */}
                     <section style={SECTION_STYLE}>
                         <h2>Skills</h2>
+                        <div className={'skill-grid'}>
+                            <div style={{ fontWeight: 500 }}>Skill</div>
+                            <div style={{ fontWeight: 500 }}></div>
+                            <div style={{ fontWeight: 500 }}>Value</div>
+                            <div style={{ fontWeight: 500 }}>1st Perk</div>
+                            <div style={{ fontWeight: 500 }}>2nd Perk</div>
+                            <div style={{ fontWeight: 500 }}>3rd Perk</div>
+                        </div>
+
                         {saveGame.data.skills
                             .filter((s) => !SPECIAL_SKILLS.has(s.name))
-                            .map((skill) => (
-                                <SkillSlider
-                                    key={skill.name}
-                                    label={skill.name}
-                                    value={skill.value}
-                                    onChange={(v) => handleSkillChange(skill.name, v)}
-                                />
-                            ))}
+                            .map((skill) => {
+                                const skillDetail = getSkillDetails(skill.name);
+
+                                if (!skillDetail) return;
+
+                                return (
+                                    <SkillSlider
+                                        key={skill.name}
+                                        label={skillDetail.name}
+                                        notes={skillDetail.notes}
+                                        perks={[
+                                            skillDetail.perk30,
+                                            skillDetail.perk60,
+                                            skillDetail.perk100,
+                                        ]}
+                                        value={skill.value}
+                                        onChange={(v) => handleSkillChange(skill.name, v)}
+                                    />
+                                );
+                            })}
                     </section>
 
                     {/* CARDS */}
