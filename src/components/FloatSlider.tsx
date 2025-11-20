@@ -33,7 +33,7 @@ export function FloatSlider({
                 step={step}
                 value={value}
                 onChange={(e) => onChange(Number(e.target.value))}
-                style={{ flex: 1 }}
+                style={{ flex: 0.5 }}
             />
 
             <span style={{ width: 48, textAlign: 'right' }}>{value.toFixed(2)}</span>

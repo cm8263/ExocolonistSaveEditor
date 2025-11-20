@@ -1,17 +1,22 @@
-import { useState } from 'react';
-import * as React from 'react';
+import React, { useState } from 'react';
 import { SaveGame } from '../../exocolonist-core/dist/types/class/saveGame';
 import { ingestRawSaveFile } from '../../exocolonist-core/src/utilities/ingestRawSaveFile.ts';
 import { SkillSlider } from './components/SkillSlider.tsx';
 import { secondsToHoursMinutes } from './utilities/secondsToHoursMinutes.ts';
 import { FloatSlider } from './components/FloatSlider.tsx';
+import { CardsTable } from './components/CardsTable.tsx';
+
+const SPECIAL_SKILLS = new Set(['kudos', 'stress', 'rebellion']);
+
+const ROW_STYLE: React.CSSProperties = { marginBottom: '0.5rem' };
+const SECTION_STYLE: React.CSSProperties = { marginTop: '1.5rem' };
+const INPUT_STYLE: React.CSSProperties = { padding: '0.25rem' };
+const BUTTON_STYLE: React.CSSProperties = { padding: '0.25rem' };
 
 function App() {
     const [saveGame, setSaveGame] = useState<SaveGame | null>(null);
     const [, setFileName] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
-
-    const HIDDEN_SKILLS = new Set(['kudos', 'stress', 'rebellion']);
 
     const updateSaveGame = (updater: (sg: SaveGame) => void) => {
         setSaveGame((prev) => {
@@ -68,10 +73,27 @@ function App() {
 
     const handlePlayTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = Number(e.target.value);
+
         if (Number.isNaN(value) || value < 0) return;
 
         updateSaveGame((next) => {
             next.playTime = value;
+        });
+    };
+
+    const handleKudosChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = Number(e.target.value);
+
+        if (Number.isNaN(value) || value < 0 || value > 999) return;
+
+        updateSaveGame((next) => {
+            next.setSkill('kudos', value);
+        });
+    };
+
+    const setMaxKudos = () => {
+        updateSaveGame((next) => {
+            next.setSkill('kudos', 999);
         });
     };
 
@@ -88,10 +110,18 @@ function App() {
     };
 
     const handleSkillChange = (skillId: string, value: number) => {
+        if (Number.isNaN(value) || value < 0 || value > 100) return;
+
         updateSaveGame((next) => {
             next.setSkill(skillId, value);
         });
     };
+
+    const playTimeLabel = saveGame ? secondsToHoursMinutes(saveGame.playTime) : '';
+    const rebellionValue = saveGame ? saveGame.getSkill('rebellion') : 0;
+    const rebellionIsRebel = rebellionValue > 50;
+    const rebellionLabel = rebellionIsRebel ? '(Rebel)' : '(Loyalist)';
+    const rebellionColor = rebellionIsRebel ? 'red' : 'blue';
 
     return (
         <div style={{ padding: '1rem', fontFamily: 'system-ui, sans-serif' }}>
@@ -104,27 +134,27 @@ function App() {
             {saveGame && (
                 <>
                     {/* BASIC INFO */}
-                    <section style={{ marginTop: '1.5rem' }}>
+                    <section style={SECTION_STYLE}>
                         <h2>Basic Info</h2>
 
-                        <div style={{ marginBottom: '0.5rem' }}>
+                        <div style={ROW_STYLE}>
                             <label>
                                 Player Name:{' '}
                                 <input
                                     value={saveGame.playerName}
                                     onChange={handleNameChange}
-                                    style={{ padding: '0.25rem' }}
+                                    style={INPUT_STYLE}
                                 />
                             </label>
                         </div>
 
-                        <div style={{ marginBottom: '0.5rem' }}>
+                        <div style={ROW_STYLE}>
                             <label>
                                 Week:{' '}
                                 <input
                                     value={saveGame.week}
                                     onChange={handleWeekChange}
-                                    style={{ padding: '0.25rem' }}
+                                    style={INPUT_STYLE}
                                     type="number"
                                     min="1"
                                     max="999"
@@ -132,39 +162,106 @@ function App() {
                             </label>
                         </div>
 
-                        <div style={{ marginBottom: '0.5rem' }}>
+                        <div style={ROW_STYLE}>
                             <label>
                                 Expedition Job ID:{' '}
                                 <input
                                     value={saveGame.expeditionJobId}
                                     onChange={handleExpeditionJobIdChange}
-                                    style={{ padding: '0.25rem' }}
+                                    style={INPUT_STYLE}
                                 />
                             </label>
                         </div>
 
-                        <div style={{ marginBottom: '0.5rem' }}>
+                        <div style={ROW_STYLE}>
                             <label>
                                 Play Time (seconds):{' '}
                                 <input
                                     value={saveGame.playTime}
                                     onChange={handlePlayTimeChange}
-                                    style={{ padding: '0.25rem' }}
+                                    style={INPUT_STYLE}
                                     type="number"
                                     min="0"
                                 />
                             </label>
-                            {(() => {
-                                const hoursMins = secondsToHoursMinutes(saveGame.playTime);
-                                return <span style={{ marginLeft: '0.5rem' }}>({hoursMins})</span>;
-                            })()}
+                            <span style={{ marginLeft: '0.5rem' }}>({playTimeLabel})</span>
+                        </div>
+
+                        <div style={ROW_STYLE}>
+                            <label>
+                                Kudos:{' '}
+                                <input
+                                    value={saveGame.getSkill('kudos')}
+                                    onChange={handleKudosChange}
+                                    style={INPUT_STYLE}
+                                    type="number"
+                                    min="0"
+                                    max="999"
+                                />
+                            </label>{' '}
+                            <button onClick={setMaxKudos} style={BUTTON_STYLE} type="button">
+                                Set Max
+                            </button>
+                        </div>
+
+                        <div style={ROW_STYLE}>
+                            <label>
+                                Stress:{' '}
+                                <input
+                                    value={saveGame.getSkill('stress')}
+                                    onChange={(e) =>
+                                        handleSkillChange('stress', Number(e.target.value))
+                                    }
+                                    style={INPUT_STYLE}
+                                    type="number"
+                                    min="0"
+                                    max="100"
+                                />
+                            </label>{' '}
+                            <button
+                                onClick={() => handleSkillChange('stress', 0)}
+                                style={BUTTON_STYLE}
+                                type="button"
+                            >
+                                Set Zero
+                            </button>
+                        </div>
+
+                        <div style={ROW_STYLE}>
+                            <label>
+                                Rebellion:{' '}
+                                <input
+                                    value={rebellionValue}
+                                    onChange={(e) =>
+                                        handleSkillChange('rebellion', Number(e.target.value))
+                                    }
+                                    style={INPUT_STYLE}
+                                    type="number"
+                                    min="0"
+                                    max="100"
+                                />
+                            </label>{' '}
+                            <span style={{ color: rebellionColor }}>{rebellionLabel}</span>{' '}
+                            <button
+                                onClick={() => handleSkillChange('rebellion', 0)}
+                                style={BUTTON_STYLE}
+                                type="button"
+                            >
+                                Set Loyal
+                            </button>{' '}
+                            <button
+                                onClick={() => handleSkillChange('rebellion', 100)}
+                                style={BUTTON_STYLE}
+                                type="button"
+                            >
+                                Set Rebellious
+                            </button>
                         </div>
                     </section>
 
                     {/* IDENTITY */}
-                    <section style={{ marginTop: '1.5rem' }}>
+                    <section style={SECTION_STYLE}>
                         <h2>Identity</h2>
-                        {/* TODO: check the naming of the sliders in-game and match here */}
                         <FloatSlider
                             label="Pronouns"
                             value={saveGame.pronouns}
@@ -185,10 +282,10 @@ function App() {
                     </section>
 
                     {/* SKILLS */}
-                    <section style={{ marginTop: '1.5rem' }}>
+                    <section style={SECTION_STYLE}>
                         <h2>Skills</h2>
                         {saveGame.data.skills
-                            .filter((s) => !HIDDEN_SKILLS.has(s.name))
+                            .filter((s) => !SPECIAL_SKILLS.has(s.name))
                             .map((skill) => (
                                 <SkillSlider
                                     key={skill.name}
@@ -199,15 +296,14 @@ function App() {
                             ))}
                     </section>
 
-                    {/* PLACEHOLDERS FOR FUTURE SECTIONS */}
-                    {/* Relationships, statuses, cards, etc. */}
-                    {/* <section style={{ marginTop: '1.5rem' }}>
-                        <h2>Relationships</h2>
-                        // map over saveGame.love here with sliders and handleLoveChange(...)
-                    </section> */}
+                    {/* CARDS */}
+                    <section style={SECTION_STYLE}>
+                        <CardsTable cards={saveGame.cards} />
+                    </section>
 
-                    <section style={{ marginTop: '1.5rem' }}>
-                        <button>Download edited save</button>
+                    {/* DOWNLOAD */}
+                    <section style={SECTION_STYLE}>
+                        <button type="button">Download edited save</button>
                     </section>
                 </>
             )}
