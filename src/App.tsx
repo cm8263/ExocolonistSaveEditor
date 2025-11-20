@@ -6,6 +6,8 @@ import { secondsToHoursMinutes } from './utilities/secondsToHoursMinutes.ts';
 import { FloatSlider } from './components/FloatSlider.tsx';
 import { CardsTable } from './components/CardsTable.tsx';
 import { getSkillDetails } from '../../exocolonist-core/src/utilities/getSkillDetails.ts';
+import { CustomGenderStringEditor } from './components/CustomGenderStringEditor.tsx';
+import type { CustomGenderString } from '../../exocolonist-core/src/types/interface/customGenderString.ts';
 
 const SPECIAL_SKILLS = new Set(['kudos', 'stress', 'rebellion']);
 
@@ -23,7 +25,7 @@ function App() {
         setSaveGame((prev) => {
             if (!prev) return prev;
 
-            const next = new SaveGame(structuredClone(prev.data));
+            const next = new SaveGame(structuredClone(prev.parsedSaveFile));
             updater(next);
             return next;
         });
@@ -101,6 +103,12 @@ function App() {
     const handlePronounsChange = (value: number) => {
         updateSaveGame((next) => {
             next.pronouns = value;
+        });
+    };
+
+    const handleCustomGenderStringChange = (entries: CustomGenderString[]) => {
+        updateSaveGame((next) => {
+            next.customGenderStrings = entries;
         });
     };
 
@@ -284,6 +292,13 @@ function App() {
                             minLabel={'Feminine'}
                             maxLabel={'Masculine'}
                         />
+
+                        {saveGame.customGenderStrings.length > 0 && (
+                            <CustomGenderStringEditor
+                                entries={saveGame.customGenderStrings}
+                                onChange={handleCustomGenderStringChange}
+                            ></CustomGenderStringEditor>
+                        )}
                     </section>
 
                     {/* SKILLS */}
@@ -298,7 +313,7 @@ function App() {
                             <div style={{ fontWeight: 500 }}>3rd Perk</div>
                         </div>
 
-                        {saveGame.data.skills
+                        {saveGame.skills
                             .filter((s) => !SPECIAL_SKILLS.has(s.name))
                             .map((skill) => {
                                 const skillDetail = getSkillDetails(skill.name);
