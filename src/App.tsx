@@ -7,7 +7,8 @@ import { FloatSlider } from './components/FloatSlider.tsx';
 import { CardsTable } from './components/CardsTable.tsx';
 import { getSkillDetails } from '../../exocolonist-core/src/utilities/getSkillDetails.ts';
 import { CustomGenderStringEditor } from './components/CustomGenderStringEditor.tsx';
-import type { CustomGenderString } from '../../exocolonist-core/src/types/interface/customGenderString.ts';
+import type { CustomGenderString } from '../../exocolonist-core/dist/types/interface/customGenderString';
+import { exportParsedSaveFile } from '../../exocolonist-core/src/utilities/exportParsedSaveFile.ts';
 
 const SPECIAL_SKILLS = new Set(['kudos', 'stress', 'rebellion']);
 
@@ -18,7 +19,7 @@ const BUTTON_STYLE: React.CSSProperties = { padding: '0.25rem' };
 
 function App() {
     const [saveGame, setSaveGame] = useState<SaveGame | null>(null);
-    const [, setFileName] = useState<string | null>(null);
+    const [fileName, setFileName] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     const updateSaveGame = (updater: (sg: SaveGame) => void) => {
@@ -29,6 +30,34 @@ function App() {
             updater(next);
             return next;
         });
+    };
+
+    const exportSaveGame = () => {
+        if (!saveGame) return;
+
+        try {
+            const json = exportParsedSaveFile(saveGame.parsedSaveFile);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+
+            const baseName =
+                fileName?.replace(/\.json$/i, '') ??
+                `${saveGame.playerName || 'exo-save'}-week-${saveGame.week}`;
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${baseName}-edited.json`;
+
+            document.body.appendChild(a);
+
+            a.click();
+            a.remove();
+
+            URL.revokeObjectURL(url);
+        } catch (err) {
+            console.error(err);
+            setError('Failed to export save file.');
+        }
     };
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -344,7 +373,9 @@ function App() {
 
                     {/* DOWNLOAD */}
                     <section style={SECTION_STYLE}>
-                        <button type="button">Download edited save</button>
+                        <button onClick={exportSaveGame} type="button">
+                            Download edited save
+                        </button>
                     </section>
                 </>
             )}
