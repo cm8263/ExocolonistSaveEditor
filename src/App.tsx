@@ -303,9 +303,6 @@ function App() {
                         <FloatSlider
                             label="Pronouns"
                             value={saveGame.pronouns}
-                            min={0}
-                            max={1}
-                            step={0.01}
                             onChange={handlePronounsChange}
                             minLabel={'She/Her'}
                             maxLabel={'He/Him'}
@@ -314,19 +311,60 @@ function App() {
                         <FloatSlider
                             label="Appearance"
                             value={saveGame.appearance}
-                            min={0}
-                            max={1}
-                            step={0.01}
                             onChange={handleAppearanceChange}
                             minLabel={'Feminine'}
                             maxLabel={'Masculine'}
                         />
 
                         {saveGame.customGenderStrings.length > 0 && (
-                            <CustomGenderStringEditor
-                                entries={saveGame.customGenderStrings}
-                                onChange={handleCustomGenderStringChange}
-                            ></CustomGenderStringEditor>
+                            <div style={{ marginTop: '1rem' }}>
+                                <details
+                                    style={{
+                                        border: '1px solid #ddd',
+                                        borderRadius: '4px',
+                                        padding: '0.5rem 0.75rem',
+                                        maxWidth: '640px',
+                                    }}
+                                >
+                                    <summary
+                                        style={{
+                                            cursor: 'pointer',
+                                            fontWeight: 500,
+                                            listStyle: 'none',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between',
+                                            gap: '0.5rem',
+                                        }}
+                                    >
+                                        <span>
+                                            Custom pronouns ({saveGame.customGenderStrings.length})
+                                        </span>
+                                        <span
+                                            style={{
+                                                fontSize: '0.8rem',
+                                                opacity: 0.7,
+                                                fontWeight: 400,
+                                            }}
+                                        >
+                                            Click to expand
+                                        </span>
+                                    </summary>
+
+                                    <div
+                                        style={{
+                                            marginTop: '0.75rem',
+                                            paddingTop: '0.75rem',
+                                            borderTop: '1px solid #eee',
+                                        }}
+                                    >
+                                        <CustomGenderStringEditor
+                                            entries={saveGame.customGenderStrings}
+                                            onChange={handleCustomGenderStringChange}
+                                        />
+                                    </div>
+                                </details>
+                            </div>
                         )}
                     </section>
 

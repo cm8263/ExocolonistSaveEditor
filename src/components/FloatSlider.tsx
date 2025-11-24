@@ -1,25 +1,13 @@
 export interface FloatSliderProps {
     label: string;
     value: number;
-    min: number;
-    max: number;
-    step: number;
     onChange: (value: number) => void;
 
     minLabel: string;
     maxLabel: string;
 }
 
-export function FloatSlider({
-    label,
-    value,
-    min = -1,
-    max = 1,
-    step = 0.01,
-    onChange,
-    minLabel,
-    maxLabel,
-}: FloatSliderProps) {
+export function FloatSlider({ label, value, onChange, minLabel, maxLabel }: FloatSliderProps) {
     let finalOutput = '';
 
     switch (label) {
@@ -69,14 +57,14 @@ export function FloatSlider({
                     opacity: 0.9,
                 }}
             >
-                {minLabel ?? min.toString()}
+                {minLabel}
             </span>
 
             <input
                 type="range"
-                min={min}
-                max={max}
-                step={step}
+                min={0}
+                max={1}
+                step={0.01}
                 value={value}
                 onChange={(e) => onChange(Number(e.target.value))}
                 style={{ flex: 0.2 }}
@@ -92,7 +80,7 @@ export function FloatSlider({
                     opacity: 0.9,
                 }}
             >
-                {maxLabel ?? max.toString()}
+                {maxLabel}
             </span>
 
             <span style={{ width: 60 }}>{finalOutput}</span>
