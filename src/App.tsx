@@ -147,6 +147,17 @@ function App() {
         });
     };
 
+    const handleMapCoordChange =
+        (axis: 'x' | 'y' | 'z') => (e: React.ChangeEvent<HTMLInputElement>) => {
+            const value = Number(e.target.value);
+
+            if (Number.isNaN(value)) return;
+
+            updateSaveGame((next) => {
+                next.setMapCoord(axis, value);
+            });
+        };
+
     const handleSkillChange = (skillId: string, value: number) => {
         if (Number.isNaN(value) || value < 0 || value > 100) return;
 
@@ -367,6 +378,58 @@ function App() {
                             </div>
                         )}
                     </section>
+
+                    {/* Position */}
+                    <div style={SECTION_STYLE}>
+                        <h2>Position</h2>
+
+                        <div style={ROW_STYLE}>
+                            <label style={{ display: 'block', marginBottom: '0.25rem' }}>
+                                Map coordinates
+                            </label>
+
+                            {/* TODO: Add preset buttons for specific locations? */}
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    gap: '0.5rem',
+                                    flexWrap: 'wrap',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                    <span style={{ fontSize: '0.75rem', opacity: 0.7 }}>X</span>
+                                    <input
+                                        type="number"
+                                        style={{ ...INPUT_STYLE, width: '7rem' }}
+                                        value={saveGame.mapCoords?.x ?? 0}
+                                        onChange={handleMapCoordChange('x')}
+                                        step={0.01}
+                                    />
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                    <span style={{ fontSize: '0.75rem', opacity: 0.7 }}>Y</span>
+                                    <input
+                                        type="number"
+                                        style={{ ...INPUT_STYLE, width: '7rem' }}
+                                        value={saveGame.mapCoords?.y ?? 0}
+                                        onChange={handleMapCoordChange('y')}
+                                        step={0.01}
+                                    />
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                    <span style={{ fontSize: '0.75rem', opacity: 0.7 }}>Z</span>
+                                    <input
+                                        type="number"
+                                        style={{ ...INPUT_STYLE, width: '7rem' }}
+                                        value={saveGame.mapCoords?.z ?? 0}
+                                        onChange={handleMapCoordChange('z')}
+                                        step={0.01}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     {/* SKILLS */}
                     <section style={SECTION_STYLE}>
