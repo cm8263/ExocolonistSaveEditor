@@ -166,6 +166,12 @@ function App() {
         });
     };
 
+    const handleCardsChange = (nextCards: string[]) => {
+        updateSaveGame((next) => {
+            next.cards = nextCards;
+        });
+    };
+
     const playTimeLabel = saveGame ? secondsToHoursMinutes(saveGame.playTime) : '';
     const rebellionValue = saveGame ? saveGame.getSkill('rebellion') : 0;
     const rebellionIsRebel = rebellionValue > 50;
@@ -469,7 +475,7 @@ function App() {
 
                     {/* CARDS */}
                     <section style={SECTION_STYLE}>
-                        <CardsTable cards={saveGame.cards} />
+                        <CardsTable cards={saveGame.cards} onCardsChange={handleCardsChange} />
                     </section>
 
                     {/* DOWNLOAD */}
